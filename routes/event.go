@@ -32,7 +32,7 @@ func getEvents(c *gin.Context) {
 	c.JSON(http.StatusOK, events)
 }
 
-func createEvents(c *gin.Context) {
+func createEvent(c *gin.Context) {
 	var event event.Event
 	err := c.ShouldBindJSON(&event)
 	if err != nil {
@@ -46,8 +46,40 @@ func createEvents(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Couldn't insert data..!!!. Try again later."})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
 
+}
+
+func updateEvent(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid event ID"})
+		return
+	}
+
+	_, err = event.GetEventById(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "Event not found"})
+		return
+	}
+
+	var updateEvent event.Event
+
+	err = c.ShouldBindJSON(&updateEvent)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request"})
+		return
+	}
+
+	err = updateEvent.Update(id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Couldn't update data..!!!. Try again later."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Event Updated!", "event": updateEvent})
 }

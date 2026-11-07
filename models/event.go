@@ -27,6 +27,19 @@ func (e *Event) Save() error {
 	return err
 }
 
+func (e *Event) Update(id int64) error {
+	query := `
+        UPDATE events
+        SET name = $1, description = $2, location = $3
+        WHERE id = $4
+        RETURNING id
+    `
+
+	err := db.DB.QueryRow(query, e.Name, e.Description, e.Location, id).Scan(&e.ID)
+
+	return err
+}
+
 func GetEventById(id int64) (*Event, error) {
 	query := `SELECT id, name, description, location, date_time, user_id FROM events WHERE id = $1`
 	var e Event
