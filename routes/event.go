@@ -33,23 +33,23 @@ func getEvents(c *gin.Context) {
 }
 
 func createEvent(c *gin.Context) {
-	var event event.Event
-	err := c.ShouldBindJSON(&event)
+	var e event.Event
+	err := c.ShouldBindJSON(&e)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request"})
 		return
 	}
 
-	event.UserID = 1
+	e.UserID = 1
 
-	err = event.Save()
+	err = e.Save()
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Couldn't insert data..!!!. Try again later."})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Event Created!", "event": event})
+	c.JSON(http.StatusCreated, gin.H{"message": "Event Created!", "event": e})
 
 }
 
