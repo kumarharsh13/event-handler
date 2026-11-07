@@ -25,3 +25,22 @@ func signup(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Sign-Up Successful"})
 }
+
+func login(c *gin.Context) {
+	var login user.LoginRequest
+
+	err := c.ShouldBindJSON(&login)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request"})
+		return
+	}
+
+	err = login.ValidateCredentials()
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Login Successfull"})
+}
