@@ -1,19 +1,34 @@
 package main
 
 import (
+	"event-handler/db"
 	event "event-handler/models"
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
+
+	db.InitDB()
 	server := gin.Default()
 
 	server.GET("/events", getEvents)
 	server.POST("/events", createEvents)
 
-	server.Run(":8000") //localhost:8000
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
+
+	server.Run(":" + port)
 }
 
 func getEvents(c *gin.Context) {
