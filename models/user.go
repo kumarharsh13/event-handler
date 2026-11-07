@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"event-handler/db"
 	"event-handler/utils"
 )
@@ -8,6 +9,12 @@ import (
 type User struct {
 	ID       int64  `json:"id"`
 	Name     string `json:"name" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"-" binding:"required"`
+}
+
+type LoginRequest struct {
+	ID       int64  `json:"-"`
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
@@ -27,4 +34,22 @@ func (u *User) Save() error {
 	err = db.DB.QueryRow(query, u.Name, u.Email, u.Password).Scan(&u.ID)
 
 	return err
+}
+
+func (login *LoginRequest) ValidateCredentials() error {
+	var retrievedPassword string
+	query := `SELECT id, password FROM users WHERE email = $1`
+	err := db.DB.QueryRow(query, login.Email).Scan(&login.ID, &retrievedPassword)
+
+	if err != nil {
+		return errors.New("Credentials are invalid")
+	}
+
+	passwordValid := utils.CheckPasswordHash(login.Password, retrievedPassword)
+
+	if !passwordValid {
+		return errors.New("Credentials are invalid")
+	}
+
+	return nil
 }
