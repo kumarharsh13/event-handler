@@ -2,6 +2,7 @@ package routes
 
 import (
 	user "event-handler/models"
+	"event-handler/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,5 +43,12 @@ func login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login Successfull"})
+	token, err := utils.GenerateToken(login.Email, login.ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Couldn't authenticate USER"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Login Successfull", "token": token})
 }

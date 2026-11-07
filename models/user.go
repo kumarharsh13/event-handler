@@ -14,6 +14,7 @@ type User struct {
 }
 
 type LoginRequest struct {
+	ID       int64  `json:"-"`
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
@@ -37,8 +38,8 @@ func (u *User) Save() error {
 
 func (login *LoginRequest) ValidateCredentials() error {
 	var retrievedPassword string
-	query := `SELECT password FROM users WHERE email = $1`
-	err := db.DB.QueryRow(query, login.Email).Scan(&retrievedPassword)
+	query := `SELECT id, password FROM users WHERE email = $1`
+	err := db.DB.QueryRow(query, login.Email).Scan(&login.ID, &retrievedPassword)
 
 	if err != nil {
 		return errors.New("Credentials are invalid")
