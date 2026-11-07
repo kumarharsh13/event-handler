@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"os"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -10,7 +11,8 @@ var DB *sql.DB
 
 func InitDB() {
 	var err error
-	DB, err = sql.Open("pgx", "postgres://postgres:password@localhost:5432/event-handler")
+	dbURL := os.Getenv("DB_URL")
+	DB, err = sql.Open("pgx", dbURL)
 
 	if err != nil {
 		panic("Couldn't open database: " + err.Error())
