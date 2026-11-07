@@ -3,6 +3,7 @@ package routes
 import (
 	user "event-handler/models"
 	"event-handler/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,7 @@ func signup(c *gin.Context) {
 	var u user.User
 
 	err := c.ShouldBindJSON(&u)
+	fmt.Print(err)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request"})
 		return
