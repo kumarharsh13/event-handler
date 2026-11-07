@@ -29,14 +29,20 @@ func (e *Event) Save() error {
 
 func (e *Event) Update(id int64) error {
 	query := `
-        UPDATE events
-        SET name = $1, description = $2, location = $3
-        WHERE id = $4
-        RETURNING id
-    `
+		UPDATE events
+		SET name = $1, description = $2, location = $3
+		WHERE id = $4
+		RETURNING id
+  `
 
 	err := db.DB.QueryRow(query, e.Name, e.Description, e.Location, id).Scan(&e.ID)
 
+	return err
+}
+
+func DeleteEvent(id int64) error {
+	query := `DELETE FROM events WHERE id = $1`
+	_, err := db.DB.Exec(query, id)
 	return err
 }
 
