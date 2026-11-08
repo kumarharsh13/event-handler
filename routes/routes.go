@@ -17,6 +17,8 @@ func RegisterRoutes(server *gin.Engine) {
 	authenticate.POST("/events", middlewares.Authenticate, createEvent)
 	authenticate.PUT("/events/:id", middlewares.Authenticate, updateEvent)
 	authenticate.DELETE("/events/:id", middlewares.Authenticate, deleteEvent)
+	authenticate.POST("events/:id/register", registerForEvent)
+	authenticate.DELETE("events/:id/register", cancleRegistration)
 
 	//THIS another way
 	// server.POST("/events", middlewares.Authenticate, createEvent)

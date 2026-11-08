@@ -58,4 +58,18 @@ func createTables() {
 	if err != nil {
 		panic("Couldn't connect to database: " + err.Error())
 	}
+
+	createRegistrationTable := `
+		CREATE TABLE IF NOT EXISTS registration (
+    id SERIAL PRIMARY KEY,
+		event_id INTEGER,
+		user_id INTEGER,
+		FOREIGN KEY (event_id) REFERENCES events(id),
+		FOREIGN KEY (user_id) REFERENCES users(id)
+	)`
+
+	_, err = DB.Exec(createRegistrationTable)
+	if err != nil {
+		panic("Couldn't connect to database: " + err.Error())
+	}
 }
