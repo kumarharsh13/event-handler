@@ -80,3 +80,21 @@ func GetAllEvents() ([]Event, error) {
 
 	return events, nil
 }
+
+func (e *Event) Register(userID int64) error {
+	query := `
+		INSERT INTO registration (event_id, user_id)
+		VALUES ($1, $2)
+		RETURNING id
+	`
+	err := db.DB.QueryRow(query, e.ID, userID).Scan(&e.ID)
+	return err
+}
+
+func (e *Event) CancelRegistration(eventID int64, userID int64) error {
+	query := `
+		DELETE FROM registration WHERE event_id = $1 AND user_id = $2
+	`
+	_, err := db.DB.Exec(query, eventID, userID)
+	return err
+}
