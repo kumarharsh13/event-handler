@@ -58,9 +58,14 @@ func updateEvent(c *gin.Context) {
 		return
 	}
 
-	_, err = event.GetEventById(id)
+	eventFound, err := event.GetEventById(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Event not found"})
+		return
+	}
+
+	if eventFound.UserID != c.GetInt64("userID") {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to update this event"})
 		return
 	}
 
@@ -90,9 +95,14 @@ func deleteEvent(c *gin.Context) {
 		return
 	}
 
-	_, err = event.GetEventById(id)
+	eventFound, err := event.GetEventById(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "Event not found"})
+		return
+	}
+
+	if eventFound.UserID != c.GetInt64("userID") {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Not authorized to delete this event"})
 		return
 	}
 
